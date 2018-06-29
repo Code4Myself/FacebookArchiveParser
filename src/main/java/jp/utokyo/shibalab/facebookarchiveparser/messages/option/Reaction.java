@@ -1,11 +1,11 @@
-package jp.utokyo.shibalab.facebookarchiveparser.messages;
+package jp.utokyo.shibalab.facebookarchiveparser.messages.option;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * class for reaction 
+ * class for reaction option in message
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Reaction {
@@ -29,8 +29,7 @@ public class Reaction {
 	 */
 	@JsonCreator
 	protected Reaction(	@JsonProperty("reaction")	String reaction,
-						@JsonProperty("actor")		String actor
-						)
+						@JsonProperty("actor")		String actor	)
 	{
 		_reaction = reaction;
 		_actor    = actor;

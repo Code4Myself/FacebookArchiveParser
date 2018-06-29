@@ -1,14 +1,13 @@
-package jp.utokyo.shibalab.facebookarchiveparser.messages;
+package jp.utokyo.shibalab.facebookarchiveparser.messages.option;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * class for URI entry
+ * class for URI entry in message
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class UriEntry {
-
 	/* ==============================================================
 	 * instance fields
 	 * ============================================================== */
@@ -27,6 +26,15 @@ public class UriEntry {
 	public String getUri() {
 		return _uri;
 	}
+	
+	/**
+	 * set URI
+	 * @param uri URI
+	 */
+	public void setUri(String uri) {
+		_uri = uri;
+	}
+	
 	/* @see java.lang.Object#toString() */
 	@Override
 	public String toString() { 

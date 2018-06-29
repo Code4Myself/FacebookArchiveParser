@@ -1,32 +1,61 @@
 package jp.utokyo.shibalab.facebookarchiveparser.messages;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Audio;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.File;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Photo;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Reaction;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Share;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Sticker;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Video;
+
 /**
  * class for individual message 
  */
 public class Message implements Comparable<Message> {
-
+	/* ==============================================================
+	 * instance methods
+	 * ============================================================== */
+	/** sender name */
 	private String _senderName;
 	
+	/** timestamp   */
 	private Date _timestamp;
 
-	private String _content;
+	/** message body */
+	private String	 _content;
 	
-	private String _type;
+	/** message type */
+	private String         _type;
 	
-	private List<String> _photoUris;
+	/** photo list   */
+	private List<Photo>    _photos;
 	
-	private List<String> _fileUris;
+	/** file list    */
+	private List<File>     _files;
 	
-	private String _stickerUri;
+	/** sticker item */
+	private Sticker        _sticker;
 	
+	/** reaction list */
 	private List<Reaction> _reactions;
+	
+	/** video list    */
+	private List<Video>    _videos;
+	
+	/** audio list    */
+	private List<Audio>    _audios;
+	
+	/** shared item */
+	private Share          _share;
+	
+	/** call duration (unit is unknown) */
+	private Integer        _callDuration;
 	
 
 	/* ==============================================================
@@ -37,46 +66,48 @@ public class Message implements Comparable<Message> {
 	 * @param senderName sender name
 	 * @param timestamp timestamp in unixtime
 	 * @param content message content
-	 * @param type message type(generic only?)
+	 * @param type message type(generic/share/call)
 	 * @param photos photo URIs
 	 * @param files file URIs
 	 * @param sticker sticker URI
 	 * @param reactions reactions
+	 * @param videos video contents
+	 * @param audio audio contents
+	 * @param share share item
+	 * @param callDuration callDuration
 	 */
 	@JsonCreator
-	protected Message(	@JsonProperty("sender_name")	String  senderName,
-						@JsonProperty("timestamp")		Long    timestamp,
-						@JsonProperty("content")		String  content,
-						@JsonProperty("type")			String  type,
-						@JsonProperty("photos")			List<UriEntry> photos,
-						@JsonProperty("files")			List<UriEntry> files,
-						@JsonProperty("sticker")		UriEntry sticker,
-						@JsonProperty("reactions")      List<Reaction> reactions
+	protected Message(	@JsonProperty("sender_name")	String         senderName,
+						@JsonProperty("timestamp")		Long           timestamp,
+						@JsonProperty("content")		String         content,
+						@JsonProperty("type")			String         type,
+						@JsonProperty("photos")			List<Photo>    photos,
+						@JsonProperty("files")			List<File>     files,
+						@JsonProperty("sticker")		Sticker        sticker,
+						@JsonProperty("reactions")      List<Reaction> reactions,
+						@JsonProperty("videos")			List<Video>    videos,
+						@JsonProperty("audio_files")	List<Audio>    audios,
+						@JsonProperty("share")          Share          share,
+						@JsonProperty("call_duration")	Integer        callDuration
 						)
 	{
+		// common contents /////////////////////////////////
 		_senderName = senderName; 
 		_timestamp  = timestamp != null ? new Date(timestamp*1000L) : null;
 		_content    = content;
 		_type       = type;
 		
 		// extract URI strings /////////////////////////////
-		if(photos != null) {
-			_photoUris = new ArrayList<>();
-			for(UriEntry entry:photos) {
-				_photoUris.add(entry.getUri());
-			}
-		}
-		// extract URI strings /////////////////////////////
-		if(files != null) {
-			_fileUris = new ArrayList<>();
-			for(UriEntry entry:files) {
-				_fileUris.add(entry.getUri());
-			}
-		}
-		
-		_stickerUri = sticker != null ? sticker.getUri() : null;
+		_photos  = photos;
+		_files   = files;
+		_videos  = videos;
+		_audios  = audios;
+		_sticker = sticker;
 		
 		_reactions = reactions;
+		_share     = share;
+		
+		_callDuration = callDuration != null ? callDuration : 0;
 	}
 	
 
@@ -119,32 +150,40 @@ public class Message implements Comparable<Message> {
 	 * get photo list attached to this message
 	 * @return photo list
 	 */
-	public List<String> getPhotos() {
-		return _photoUris;
+	public List<Photo> getPhotos() {
+		return _photos;
 	}
 	
 	/**
 	 * get file list attached to this message
 	 * @return file list
 	 */
-	public List<String> getFiles() {
-		return _fileUris;
+	public List<File> getFiles() {
+		return _files;
+	}
+	
+	/**
+	 * get video list 
+	 * @return vidio list
+	 */
+	public List<Video> getVideos() {
+		return _videos;
+	}
+	
+	/**
+	 * get audio list
+	 * @return audio list
+	 */
+	public List<Audio> getAudios() {
+		return _audios;
 	}
 	
 	/**
 	 * get sticker URI
 	 * @return sticker URI
 	 */
-	public String getStickerUri() {
-		return _stickerUri;
-	}
-	
-	/**
-	 * set sticker URI
-	 * @param uri sticker URI
-	 */
-	protected void setStickerUri(String uri) {
-		_stickerUri = uri;
+	public Sticker getSticker() {
+		return _sticker;
 	}
 	
 	/**
@@ -153,6 +192,22 @@ public class Message implements Comparable<Message> {
 	 */
 	public List<Reaction> getReactions() {
 		return _reactions;
+	}
+	
+	/**
+	 * get shared link
+	 * @return shared link
+	 */
+	public Share getShare() {
+		return _share;
+	}
+	
+	/**
+	 * get call duration(second?)
+	 * @return call duration
+	 */
+	public int getCallDuration() {
+		return _callDuration;
 	}
 	
 	/* @see java.lang.Comparable#compareTo(java.lang.Object) */

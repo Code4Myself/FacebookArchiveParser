@@ -38,7 +38,7 @@ public class FBStringDeserializer extends JsonDeserializer<String> {
 		StringBuffer buf = new StringBuffer();
 
 		// prepare regular expression ////////////////////// 
-        Pattern pattern = Pattern.compile(".u(.{4}).u(.{4}).u(.{4})");
+        Pattern pattern = Pattern.compile("\\\\u(.{4})\\\\u(.{4})\\\\u(.{4})");
         Matcher matcher = pattern.matcher(text);
         int     endIdx  = 0;
         while (matcher.find()) {
