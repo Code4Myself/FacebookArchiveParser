@@ -22,13 +22,13 @@ public class Message implements Comparable<Message> {
 	 * instance methods
 	 * ============================================================== */
 	/** sender name */
-	private String _senderName;
+	private String         _senderName;
 	
 	/** timestamp   */
-	private Date _timestamp;
+	private Date           _timestamp;
 
 	/** message body */
-	private String	 _content;
+	private String	       _content;
 	
 	/** message type */
 	private String         _type;

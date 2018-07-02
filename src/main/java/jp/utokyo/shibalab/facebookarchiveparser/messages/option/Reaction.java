@@ -53,4 +53,10 @@ public class Reaction {
 	public String getActor() {
 		return _actor;
 	}
+	
+	/* @see java.lang.Object#toString() */
+	@Override
+	public String toString() {
+		return String.format("%s|%s",getReaction(),getActor());
+	}
 }

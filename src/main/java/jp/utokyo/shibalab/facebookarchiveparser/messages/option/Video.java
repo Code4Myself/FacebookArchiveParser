@@ -30,6 +30,6 @@ public class Video extends UriEntry {
 	/* @see jp.utokyo.shibalab.facebookarchiveparser.messages.option.UriEntry#toString() */
 	@Override
 	public String toString() {
-		return String.format("uri=%s,thumbnail=%s",getUri(),getThumbnail().getUri());
+		return String.format("uri=%s|thumbnail=%s",getUri(),getThumbnail().getUri());
 	}
 }
