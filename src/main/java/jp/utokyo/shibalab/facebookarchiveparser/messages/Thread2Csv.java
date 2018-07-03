@@ -88,7 +88,7 @@ public class Thread2Csv {
 		String[] tokens = new String[]{
 			msg.getSenderName(),
 			sdf.format(msg.getTimestamp()),
-//			msg.getContent(),	// sometimes include binary data( failed to convert into text)
+			msg.getContent(),	// sometimes include binary data( failed to convert into text)
 			msg.getType(),
 			msg.getPhotos()    != null ? StringUtils.join(msg.getPhotos(),_arrayDelim)    : "",
 			msg.getFiles()     != null ? StringUtils.join(msg.getFiles(), _arrayDelim)    : "",

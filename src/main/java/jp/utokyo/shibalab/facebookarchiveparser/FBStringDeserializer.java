@@ -1,11 +1,13 @@
 package jp.utokyo.shibalab.facebookarchiveparser;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,38 +29,43 @@ public class FBStringDeserializer extends JsonDeserializer<String> {
 	public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 		return decode( StringEscapeUtils.escapeJava( p.getValueAsString() ) );
 	}
-
+	
 	/**
 	 * conduct decoding from Facebook encoding(?)
 	 * @param text text in facebook encoding
 	 * @return decoded string
 	 */
 	public String decode(String text) {
-        // output text /////////////////////////////////////
-		StringBuffer buf = new StringBuffer();
-
-		// prepare regular expression ////////////////////// 
-        Pattern pattern = Pattern.compile("\\\\u(.{4})\\\\u(.{4})\\\\u(.{4})");
-        Matcher matcher = pattern.matcher(text);
-        int     endIdx  = 0;
-        while (matcher.find()) {
-        	// extract text except for decoding ::::::::::::
-        	int    startIdx = matcher.start();
-        	String expt  = (endIdx == matcher.start()) ? "" : text.substring(endIdx,startIdx);
-        	// extract text for decoding :::::::::::::::::::
-            String group = matcher.group();
-            String a     = group.replaceAll("u00","").replace("\\","");
-            int    c     = Integer.decode("0x"+a).intValue();
-            byte[] bytes = ByteBuffer.allocate(4).putInt(c).array();
-            // compose decoded text ::::::::::::::::::::::::
-            buf.append(expt).append(new String(bytes));
-            endIdx = matcher.end();
-        }
-        // append if text remains //////////////////////////
-        if( endIdx != text.length() ) {
-        	buf.append(text.substring(endIdx));
-        }
-        
-        return buf.toString();
+		Pattern p = Pattern.compile("((\\\\u[0-F]{4})+)");
+    	Matcher m = p.matcher(text);
+    	
+    	while (m.find()) {
+    		String     org   = m.group(1); 
+    		Pattern    p2    = Pattern.compile("\\\\u([0-F]{4})");
+    		Matcher    m2    = p2.matcher(org);
+    		List<Byte> bytes = new ArrayList<>();
+    		while (m2.find()) {
+    			String group = m2.group(1);
+    			bytes.add( Integer.decode("0x"+group).byteValue() );
+    		}
+    		byte[] exb = toArray(bytes);
+    		String ns  = new String( exb );
+    		text = StringUtils.replaceOnce(text,org,ns);
+    	}
+    	return text;
+	}
+	
+	/**
+	 * convert object list to primitive array
+	 * @param bytes Byte object list
+	 * @return byte primitive array
+	 */
+	private byte[] toArray(List<Byte> bytes) {
+		int    len   = bytes.size();
+		byte[] array = new byte[len];
+		for(int i=0;i<len;i++) {
+			array[i] = bytes.get(i);
+		}
+		return array;
 	}
 }
