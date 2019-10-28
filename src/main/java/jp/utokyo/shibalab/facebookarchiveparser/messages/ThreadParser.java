@@ -27,7 +27,7 @@ public class ThreadParser {
 	public static final String STICKER_USED_DIR = "stickers_used";
 	
 	/** message.json: message log file in JSON format in individual thread directory */
-	public static final String MESSAGE_JSON     = "message.json";
+	public static final String MESSAGE_JSON     = "message_1.json";
 	
 	
 	/* ==============================================================
@@ -39,22 +39,33 @@ public class ThreadParser {
 	 * @return parsed threads
 	 */
 	public List<Thread> parseAllMessages(java.io.File messageDir) {
+		System.out.println("start parsing messages ... ");
 		// list directories of individual thread ///////////
 		java.io.File[] threadDirs = messageDir.listFiles(new FileFilter() {
 			public boolean accept(java.io.File f) {
-				return f.isDirectory() && !f.getName().startsWith(".") && !f.getName().equalsIgnoreCase(STICKER_USED_DIR);
+				return f.isDirectory() && !f.getName().startsWith(".");
+//				return f.isDirectory() && !f.getName().startsWith(".") && !f.getName().equalsIgnoreCase(STICKER_USED_DIR);
 			}
 		});
 		
 		// parse all message threads ///////////////////////
 		List<Thread> threads = new ArrayList<>();
+		int N = 0;
 		for(java.io.File threadDir:threadDirs) {
 			// specify the message.json file :::::::::::::::
 			java.io.File messageFile = new java.io.File(threadDir,MESSAGE_JSON);
-			
+//			System.out.println("\t\t" + messageFile.getName());
 			// parse message and add list ::::::::::::::::::
-			threads.add(parseMessage(messageFile));
+			Thread thread = parseMessage(messageFile);
+			if( thread != null ) {
+				threads.add(thread);
+				N += thread.getMessages().size();
+			}
+//			else {
+//				System.err.println(messageFile.getAbsolutePath());
+//			}
 		}
+		System.out.printf("done(%d threads, %d messages)\n\n", threads.size(), N);
 		return threads;
 	}
 	
@@ -77,9 +88,9 @@ public class ThreadParser {
 			// update file path to absolute ::::::::::::::::
 			String homeDir = messageFile.getParent() + "/";
 			for(Message msg:thread.getMessages()) {
-				updateUris(msg.getPhotos(),homeDir);
-				updateUris(msg.getFiles(), homeDir);
-				updateUris(msg.getAudios(),homeDir);
+				_updateUris(msg.getPhotos(),homeDir);
+				_updateUris(msg.getFiles(), homeDir);
+				_updateUris(msg.getAudios(),homeDir);
 
 				List<Video> videos = msg.getVideos();
 				if( videos != null ) {
@@ -102,7 +113,8 @@ public class ThreadParser {
 			return thread;
 		}
 		// exception for JSON parsing /////////////////////
-		catch(JsonMappingException|JsonParseException exp) { 
+		catch(JsonMappingException|JsonParseException exp) {
+//			System.err.println(":::" + messageFile.getAbsolutePath());
 			exp.printStackTrace();
 		}
 		// IO exception ///////////////////////////////////
@@ -117,7 +129,7 @@ public class ThreadParser {
 	 * @param uris UriEntry items
 	 * @param homeDir home dir
 	 */
-	private void updateUris(List<? extends UriEntry> uris,String homeDir) {
+	private void _updateUris(List<? extends UriEntry> uris,String homeDir) {
 		if( uris != null ) {
 			for(UriEntry uri:uris) {
 				uri.setUri(homeDir + uri.getUri());

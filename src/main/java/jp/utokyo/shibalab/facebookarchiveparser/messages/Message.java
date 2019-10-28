@@ -8,10 +8,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Audio;
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.File;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Gif;
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Photo;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Plan;
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Reaction;
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Share;
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Sticker;
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.User;
 import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Video;
 
 /**
@@ -51,11 +54,23 @@ public class Message implements Comparable<Message> {
 	/** audio list    */
 	private List<Audio>    _audios;
 	
+	/** Gif list */
+	private List<Gif>      _gifs;
+	
+	/** Users */
+	private List<User>     _users;
+	
 	/** shared item */
 	private Share          _share;
 	
 	/** call duration (unit is unknown) */
 	private Integer        _callDuration;
+	
+	/** missed flag */
+	private Boolean        _missed;
+	
+	/** plan */
+	private Plan           _plan;
 	
 
 	/* ==============================================================
@@ -73,12 +88,16 @@ public class Message implements Comparable<Message> {
 	 * @param reactions reactions
 	 * @param videos video contents
 	 * @param audio audio contents
+	 * @param gifs  GIF contents
+	 * @param users users
 	 * @param share share item
 	 * @param callDuration callDuration
+	 * @param missed missed flag
+	 * @param plan plan 
 	 */
 	@JsonCreator
 	protected Message(	@JsonProperty("sender_name")	String         senderName,
-						@JsonProperty("timestamp")		Long           timestamp,
+						@JsonProperty("timestamp_ms")	Long           timestamp,
 						@JsonProperty("content")		String         content,
 						@JsonProperty("type")			String         type,
 						@JsonProperty("photos")			List<Photo>    photos,
@@ -87,13 +106,17 @@ public class Message implements Comparable<Message> {
 						@JsonProperty("reactions")      List<Reaction> reactions,
 						@JsonProperty("videos")			List<Video>    videos,
 						@JsonProperty("audio_files")	List<Audio>    audios,
+						@JsonProperty("gifs")           List<Gif>      gifs,
+						@JsonProperty("users")          List<User>     users,
 						@JsonProperty("share")          Share          share,
-						@JsonProperty("call_duration")	Integer        callDuration
+						@JsonProperty("call_duration")	Integer        callDuration,
+						@JsonProperty("missed")         Boolean        missed,
+						@JsonProperty("plan")           Plan           plan
 						)
 	{
 		// common contents /////////////////////////////////
 		_senderName = senderName; 
-		_timestamp  = timestamp != null ? new Date(timestamp*1000L) : null;
+		_timestamp  = timestamp != null ? new Date(timestamp) : null;
 		_content    = content;
 		_type       = type;
 		
@@ -102,12 +125,16 @@ public class Message implements Comparable<Message> {
 		_files   = files;
 		_videos  = videos;
 		_audios  = audios;
+		_gifs    = gifs;
+		_users   = users;
 		_sticker = sticker;
 		
 		_reactions = reactions;
 		_share     = share;
+		_missed    = missed;
 		
 		_callDuration = callDuration != null ? callDuration : 0;
+		_plan         = plan;
 	}
 	
 
@@ -179,6 +206,22 @@ public class Message implements Comparable<Message> {
 	}
 	
 	/**
+	 * get GIF list
+	 * @return gif list
+	 */
+	public List<Gif> getGifs() {
+		return _gifs;
+	}
+	
+	/**
+	 * get user list
+	 * @return user list
+	 */
+	public List<User> getUsers() {
+		return _users;
+	}
+	
+	/**
 	 * get sticker URI
 	 * @return sticker URI
 	 */
@@ -206,8 +249,24 @@ public class Message implements Comparable<Message> {
 	 * get call duration(second?)
 	 * @return call duration
 	 */
-	public int getCallDuration() {
+	public Integer getCallDuration() {
 		return _callDuration;
+	}
+	
+	/**
+	 * check if missed or not
+	 * @return result
+	 */
+	public Boolean isMissed() {
+		return _missed;
+	}
+	
+	/**
+	 * get plan 
+	 * @return  plan 
+	 */
+	public Plan getPlan() {
+		return _plan;
 	}
 	
 	/* @see java.lang.Comparable#compareTo(java.lang.Object) */

@@ -1,5 +1,7 @@
 package jp.utokyo.shibalab.facebookarchiveparser.messages;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -28,14 +30,20 @@ public class Thread2Csv {
 		
 		try (BufferedWriter bw=Files.newBufferedWriter(outputFile.toPath())) {
 			Thread2Csv conv = new Thread2Csv();
+			
+			bw.write(conv.getCsvHeader());
+			bw.newLine();
+			
+			System.out.println("start exporting messages ... ");
 			for(Thread thread:threads) {
-				System.out.println(thread.getTitle());
+				System.out.println("\t\t" + thread.getThreadPath());
 				
 				List<String> lines = conv.toCsvString(thread);
 				for(String line:lines) {
 					bw.write(line); bw.newLine();
 				}
-			}	
+			}
+			System.out.println("... done");
 		}
 		catch(IOException exp) {
 			exp.printStackTrace();
@@ -78,6 +86,39 @@ public class Thread2Csv {
 	 * instance methods
 	 * ============================================================== */
 	/**
+	 * get CSV header line
+	 * @return CSV header 
+	 */
+	public String getCsvHeader() {
+		String[] tokens = new String[] {
+			"threadTitle",
+			"threadPath",
+			"isStillParticipant",
+			"status",
+			"threadType",
+			"participants",
+			"MsgSenderName",
+			"Timestamp",
+			"MsgContent",
+			"MsgType",
+			"Photos",
+			"Files",
+			"Sticker",
+			"Reactions",
+			"Videos",
+			"Audios",
+			"Gifs",
+			"Users",
+			"Share",
+			"Duration",
+			"missed",
+			"plan"
+		};
+		
+		return StringUtils.join(tokens,_delim);
+	}
+	
+	/**
 	 * get CSV string from message 
 	 * @param msg message 
 	 * @return CSV string
@@ -90,14 +131,18 @@ public class Thread2Csv {
 			sdf.format(msg.getTimestamp()),
 			msg.getContent(),	// sometimes include binary data( failed to convert into text)
 			msg.getType(),
-			msg.getPhotos()    != null ? StringUtils.join(msg.getPhotos(),_arrayDelim)    : "",
-			msg.getFiles()     != null ? StringUtils.join(msg.getFiles(), _arrayDelim)    : "",
-			msg.getSticker()   != null ? msg.getSticker().getUri()                        : "",
-			msg.getReactions() != null ? StringUtils.join(msg.getReactions(),_arrayDelim) : "",
-			msg.getVideos()    != null ? StringUtils.join(msg.getVideos(),_arrayDelim)    : "",
-			msg.getAudios()    != null ? StringUtils.join(msg.getAudios(),_arrayDelim)    : "",
-			msg.getShare()     != null ? msg.getShare().getLink()                         : "",
-			String.valueOf(msg.getCallDuration())
+			msg.getPhotos()       != null ? StringUtils.join(msg.getPhotos(),_arrayDelim)    : EMPTY,
+			msg.getFiles()        != null ? StringUtils.join(msg.getFiles(), _arrayDelim)    : EMPTY,
+			msg.getSticker()      != null ? msg.getSticker().getUri()                        : EMPTY,
+			msg.getReactions()    != null ? StringUtils.join(msg.getReactions(),_arrayDelim) : EMPTY,
+			msg.getVideos()       != null ? StringUtils.join(msg.getVideos(),_arrayDelim)    : EMPTY,
+			msg.getAudios()       != null ? StringUtils.join(msg.getAudios(),_arrayDelim)    : EMPTY,
+			msg.getGifs()         != null ? StringUtils.join(msg.getGifs(),_arrayDelim)      : EMPTY,
+			msg.getUsers()        != null ? StringUtils.join(msg.getUsers(),_arrayDelim)     : EMPTY,
+			msg.getShare()        != null ? msg.getShare().getLink()                         : EMPTY,
+			msg.getCallDuration() != null ? String.valueOf(msg.getCallDuration())            : EMPTY,
+			msg.isMissed()        != null ? String.valueOf(msg.isMissed())                   : EMPTY,
+			msg.getPlan()         != null ? msg.getPlan().toString()                         : EMPTY
 		};
 
 		return StringUtils.join(tokens,_delim);
