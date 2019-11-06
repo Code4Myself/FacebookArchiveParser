@@ -1,10 +1,11 @@
 package jp.utokyo.shibalab.facebookarchiveparser.messages;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jp.utokyo.shibalab.facebookarchiveparser.messages.option.Participant;
 
 /**
  * Class for individual thread data
@@ -15,18 +16,24 @@ public class Thread {
 	 * ============================================================== */
 	/** all messages */
 	private List<Message> _messages;
+	
 	/** thread title */
 	private String _title;
+	
 	/** participating status          */
 	private Boolean _participate;
+	
 	/** thread status                 */
 	private String  _status;
+	
 	/** thread type(regular only?)    */
 	private String  _threadType;
+	
 	/** thread path(directory name?)  */
 	private String  _threadPath;
+	
 	/** list of participants          */
-	private List<String> _participants;
+	private List<Participant> _participants;
 	
 
 	/* ==============================================================
@@ -43,13 +50,13 @@ public class Thread {
 	 * @param participants list of participants
 	 */
 	@JsonCreator
-	protected Thread(	@JsonProperty("messages")				List<Message> messages,
-						@JsonProperty("title")					String        title,
-						@JsonProperty("is_still_participant")	Boolean       participate,
-						@JsonProperty("status")					String        status,
-						@JsonProperty("thread_type")			String        threadType,
-						@JsonProperty("thread_path")			String        threadPath,
-						@JsonProperty("participants")			List<String>  participants
+	protected Thread(	@JsonProperty("messages")				List<Message>      messages,
+						@JsonProperty("title")					String             title,
+						@JsonProperty("is_still_participant")	Boolean            participate,
+						@JsonProperty("status")					String             status,
+						@JsonProperty("thread_type")			String             threadType,
+						@JsonProperty("thread_path")			String             threadPath,
+						@JsonProperty("participants")			List<Participant>  participants
 					)
 	{
 		_messages    = messages;
@@ -58,12 +65,13 @@ public class Thread {
 		_status      = status;
 		_threadType  = threadType;
 		_threadPath  = threadPath;
-		if( participants!= null ) {
-			_participants = new ArrayList<>();
-			for(String person:participants) {
-				_participants.add( person );
-			}
-		}
+		_participants= participants;
+//		if( participants!= null ) {
+//			_participants = new ArrayList<>();
+//			for(Participant person:participants) {
+//				_participants.add( person );
+//			}
+//		}
 	}
 
 	
@@ -122,7 +130,7 @@ public class Thread {
 	 * get participants
 	 * @return participants
 	 */
-	public List<String> getParticipants() {
+	public List<Participant> getParticipants() {
 		return _participants;
 	}
 }
