@@ -98,6 +98,7 @@
 |Json Key|Data Type|Note|
 |:---|:---:|:---|
 |datr_stats|object||
+||||
 |???(datr_cookie?)|array|unixtime(sec) array ?|
 
 
@@ -122,6 +123,7 @@
 |Json Key|Data Type|Note|
 |:---|:---:|:---|
 |account_accesses|array|object array|
+||||
 |action|string|action name?|
 |timestamp|long|unixtime(sec) of action happened|
 |site|string|site|
@@ -134,6 +136,7 @@
 |Json Key|Data Type|Note|
 |:---|:---:|:---|
 |devices|array|object array|
+||||
 |type|string|device type|
 |os|string|os version|
 |update_time|long|unixtime(sec) of update time|
@@ -159,6 +162,7 @@
 |Json Key|Data Type|Note|
 |:---|:---:|:---|
 |used_ip_address|array||
+||||
 |ip|string|IP address, v4 or v6|
 |action|string|action name|
 |timestamp|long|unixtime(sec) of action happened|
@@ -170,6 +174,7 @@
 |Json Key|Data Type|Note|
 |:---|:---:|:---|
 |active_sessions|array||
+||||
 |created_timestamp|long|unixtime(sec) of created time|
 |updated_timestamp|long|unixtime(sec) of updated time|
 |ip_address|string|IP address logged in, v4 or v6|
